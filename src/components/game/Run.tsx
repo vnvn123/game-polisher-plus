@@ -39,6 +39,7 @@ export function Run({
     [paused, setPaused] = useState(false),
     [inspected, setInspected] = useState<string | null>(null),
     [pending, setPending] = useState(false),
+    [settled, setSettled] = useState(false),
     [error, setError] = useState(""),
     [saveStatus, setSaveStatus] = useState(
       cloud ? "Cloud checkpoints active" : "Guest save on this device",
@@ -154,6 +155,7 @@ export function Run({
     if (saved) {
       try {
         await onFinish(state.current);
+        setSettled(true);
       } catch (e) {
         setError(e instanceof Error ? e.message : "Rewards were not saved");
       }
@@ -394,8 +396,10 @@ export function Run({
                 onClick={async () => {
                   if (!(await flush(true))) return;
                   state.current.ended = true;
+                  finished.current = true;
                   setHud(structuredClone(state.current));
-                  await onFinish(state.current);
+                  try { await onFinish(state.current); setSettled(true); }
+                  catch (e) { setError(e instanceof Error ? e.message : "Rewards were not saved"); }
                 }}
               >
                 Abandon run
@@ -432,7 +436,6 @@ export function Run({
                 <Button
                   variant="outline"
                   onClick={() => {
-                    finished.current = false;
                     setError("");
                     void finish();
                   }}
@@ -440,7 +443,7 @@ export function Run({
                   Retry save
                 </Button>
               )}
-              <Button variant="game" disabled={pending || !!error} onClick={onExit}>
+              <Button variant="game" disabled={!settled || pending || !!error} onClick={onExit}>
                 <ArrowLeft />
                 Return to Hub
               </Button>

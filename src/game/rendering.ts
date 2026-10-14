@@ -53,6 +53,8 @@ export class Renderer {
     ctx.fillRect(0, 0, width, height);
     ctx.save();
     ctx.translate(width / 2 - s.player.x, height / 2 - s.player.y);
+    if (save.settings.shake && s.player.inv > 0 && !window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+      ctx.translate(Math.sin(s.time * 95) * 2, Math.cos(s.time * 83) * 2);
     const minx = s.player.x - width / 2,
       miny = s.player.y - height / 2;
     const floorImage = this.image(ART["hollow-cathedral-floor"]);
