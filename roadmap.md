@@ -9,4 +9,5 @@
 - [ ] Import existing account identities and records (blocked: exports not supplied).
 - [ ] Implement safe guest-to-account transfer (blocked: requires approved import policy for unverified guest history; existing stub rejects imports).
 - [ ] Finalize collision layouts and distinct boss attack patterns (blocked: approval needed before altering existing combat / movement rules).
-- [ ] Complete remaining specification work: dedicated armor/ring/pet artwork, every rarity effect, run settings, password recovery and full 30-minute/boss/endless acceptance verification. This milestone is not the completed specification.
+- [x] Add visual settings to the pause menu without changing combat values.
+- [ ] Complete remaining specification work: dedicated armor/ring/pet artwork, every rarity effect, password recovery and full 30-minute/boss/endless acceptance verification. This milestone is not the completed specification.

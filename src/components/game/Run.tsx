@@ -37,6 +37,7 @@ export function Run({
     saving = useRef(false),
     finished = useRef(false);
   const [hud, setHud] = useState(state.current),
+    [runSettings, setRunSettings] = useState(save.settings),
     [paused, setPaused] = useState(false),
     [inspected, setInspected] = useState<string | null>(null),
     [pending, setPending] = useState(false),
@@ -99,7 +100,7 @@ export function Run({
               ),
             ),
           };
-          step(s, save, input);
+          step(s, { ...save, settings: runSettings }, input);
           frames.current.push(input);
           acc -= 1 / 30;
           checkpoint++;
@@ -110,7 +111,7 @@ export function Run({
           void flush(false);
         }
       } else acc = 0;
-      renderer.draw(s, save);
+      renderer.draw(s, { ...save, settings: runSettings });
       if (now - hudTime > 100) {
         setHud(structuredClone(s));
         hudTime = now;
@@ -128,7 +129,7 @@ export function Run({
       window.removeEventListener("keyup", ku);
       window.removeEventListener("blur", blur);
     };
-  }, [save]);
+  }, [save, runSettings]);
   async function flush(abandon: boolean) {
     if (saving.current) return false;
     saving.current = true;
@@ -182,7 +183,7 @@ export function Run({
     setInspected(id);
   };
   return (
-    <div className="run-screen" data-ui-scale={save.settings.scale}>
+    <div className="run-screen" data-ui-scale={runSettings.scale}>
       <canvas
         ref={canvas}
         aria-label="Hollowfall survival battlefield"
@@ -361,6 +362,12 @@ export function Run({
               <span>Enemies defeated</span>
               <strong>{hud.metrics["kills"] ?? 0}</strong>
             </div>
+            <div className="section-rule">Run settings</div>
+            {(["numbers", "effects", "shake", "animation"] as const).map((key, index) => <div className="setting-row" key={key}>
+              <span>{["Damage numbers", "Combat effects", "Screen shake", "Character animation"][index]}</span>
+              <input type="checkbox" aria-label={["Run damage numbers", "Run combat effects", "Run screen shake", "Run character animation"][index]}
+                checked={runSettings[key]} onChange={(event) => setRunSettings((settings) => ({ ...settings, [key]: event.target.checked }))} />
+            </div>)}
             {error && <div className="error-message">{error}</div>}
             <div className="modal-actions">
               {error ? (

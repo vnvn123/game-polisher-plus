@@ -24,7 +24,7 @@ Cloud authentication/writes/isolation remain unverified: the backend has no auth
 - World collision/pathfinding and distinct boss patterns remain unchanged pending approval to alter existing movement/attack rules.
 - Armor/ring/pet icons still use source fallback symbols; supplementary creature atlases share some enemy cells rather than nineteen independent cells per world.
 - Some advanced equipment, pet and rarity rules need further auditing against the full specification.
-- In-run settings and complete advanced passive values remain incomplete; password recovery has not been added.
+- The pause menu now includes per-run visual settings; complete advanced passive values remain incomplete. Password recovery has not been added.
 - Guest progress remains separate from accounts; the source's guest-import function still safely rejects unverifiable history.
 - Existing application records and user identity exports are missing. Do not grant access to imported ownership records before verified identity mapping.
 
