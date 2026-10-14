@@ -1,0 +1,16 @@
+{
+  "source": "code-archive",
+  "capabilities": [
+    {"capability":"game code and interface","source":"uploaded archive","outcome":"preserve and improve","status":"in_progress","next_action":"Import existing TanStack game without replacing its systems"},
+    {"capability":"schema","source":"profiles, game_saves, game_runs migration","outcome":"migrate","status":"in_progress","next_action":"Apply original protected schema to Cloud"},
+    {"capability":"records","source":"no record export supplied","outcome":"migrate","status":"pending","next_action":"User supplies application table CSV or JSON exports"},
+    {"capability":"auth identities","source":"Cloud Auth in source; no user export","outcome":"migrate","status":"pending","next_action":"User supplies original IDs and verified email export; implement verified identity mapping before linking records"},
+    {"capability":"authorization","source":"owner RLS and authoritative run replay","outcome":"preserve","status":"in_progress","next_action":"Verify own-save access and isolation"},
+    {"capability":"uploaded file bytes","source":"bundled art and existing CDN pointers","outcome":"preserve","status":"in_progress","next_action":"Import art through project asset flow and check rendering"},
+    {"capability":"external providers","source":"Google managed sign-in","outcome":"preserve","status":"configured","next_action":"User completes provider sign-in to verify"},
+    {"capability":"public endpoints, callbacks, webhooks, schedules","source":"none detected in source routes","outcome":"not_applicable","status":"inspected","next_action":"None"},
+    {"capability":"secrets","source":"source environment excluded","outcome":"replace with generated Cloud bindings","status":"configured","next_action":"Do not copy old environment"},
+    {"capability":"cutover","source":"unpublished target","outcome":"pending user publication","status":"pending","next_action":"Publish only on explicit request after verification"},
+    {"capability":"verification","source":"source routing tests","outcome":"extend and run","status":"in_progress","next_action":"Test guest game, menus, progression, replay and Cloud save"}
+  ]
+}
