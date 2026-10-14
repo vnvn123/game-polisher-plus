@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Coins, Pause, Skull, Play, ArrowLeft, RotateCcw, Heart, X } from "lucide-react";
-import { PASSIVES, WEAPONS, WORLDS, weaponStats } from "@/game/content";
+import { PASSIVES, PETS, WEAPONS, WORLDS, weaponStats } from "@/game/content";
+import { ItemArt } from "./ItemArt";
 import { Renderer } from "@/game/rendering";
 import { choose, step, type GameState, type Input } from "@/game/simulation";
 import type { Save } from "@/game/progression";
@@ -168,6 +169,7 @@ export function Run({
   };
   const boss = hud.enemies.find((e) => WORLDS[hud.world]?.["bosses"].some((b) => b.id === e.def));
   const bossDef = boss ? WORLDS[hud.world]?.["bosses"].find((b) => b.id === boss.def) : undefined;
+  const equippedPet = save.inventory.find((item) => item.id === save.equipped.pet);
   const inspectedWeapon = WEAPONS.find((w) => inspected === `w:${w.id}`);
   const inspectedPassive = PASSIVES.find((p) => inspected === `p:${p.id}`);
   const inspectionLevel = inspectedWeapon
@@ -270,6 +272,10 @@ export function Run({
         ))}
       </div>
       <div className="run-save-status">{saveStatus}</div>
+      {equippedPet && <div className="run-pet" aria-label="Automatic pet ability">
+        <ItemArt item={equippedPet} />
+        <span>{PETS[equippedPet.set]?.[1]}<small>Auto · {hud.petCooldown > 0 ? `${Math.ceil(hud.petCooldown)}s` : "Ready"}</small></span>
+      </div>}
       {inspected && (inspectedWeapon || inspectedPassive) && (
         <div className="modal-backdrop">
           <div className="modal" role="dialog" aria-modal="true" aria-label="Active skill details">

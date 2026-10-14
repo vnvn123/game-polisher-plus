@@ -12,11 +12,10 @@ import {
   readGuest,
   writeGuest,
   applyAction,
-  addStats,
   type Save,
   type Action,
 } from "@/game/progression";
-import { createGame, runMetrics, type GameState, type Input } from "@/game/simulation";
+import { createGame, type GameState, type Input } from "@/game/simulation";
 import { loadPlayer, playerAction, beginRun, syncRun } from "@/game/game.functions";
 import { Hub } from "./Hub";
 import { Run } from "./Run";
@@ -73,6 +72,7 @@ export function Game() {
           if (alive) {
             setSave(result.save);
             version.current = result.version;
+            setRecover(result.recover);
             setEntered(true);
           }
         } catch (e) {

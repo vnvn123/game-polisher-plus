@@ -1,8 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { freshSave, applyAction, addStats, type Save, type Action } from "./progression";
-import { createGame, runMetrics, step, type GameState, type Input } from "./simulation";
+import { freshSave, applyAction, type Save, type Action } from "./progression";
+import { createGame, step, type GameState, type Input } from "./simulation";
 import type { Json } from "@/integrations/supabase/types";
 import { settleRun } from "./settlement";
 export const loadPlayer = createServerFn({ method: "POST" })
@@ -14,7 +14,12 @@ export const loadPlayer = createServerFn({ method: "POST" })
       .eq("user_id", context.userId)
       .maybeSingle();
     if (error) throw new Error(error.message);
-    if (data) return { save: data.state as unknown as Save, version: data.version };
+    if (data) {
+      const { data: unfinished, error: runError } = await context.supabase.from("game_runs")
+        .select("id").eq("user_id", context.userId).eq("finished", false).limit(1);
+      if (runError) throw new Error(runError.message);
+      return { save: data.state as unknown as Save, version: data.version, recover: !!unfinished?.length };
+    }
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const state = freshSave();
     const { error: insert } = await supabaseAdmin
@@ -24,7 +29,7 @@ export const loadPlayer = createServerFn({ method: "POST" })
         { onConflict: "user_id", ignoreDuplicates: true },
       );
     if (insert) throw new Error(insert.message);
-    return { save: state, version: 1 };
+    return { save: state, version: 1, recover: false };
   });
 export const playerAction = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
