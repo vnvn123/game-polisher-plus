@@ -135,6 +135,7 @@ export function Game() {
     setBusy(true);
     try {
       rewarded.current = false;
+      setMessage("");
       if (user) {
         const result = await start();
         runMeta.current = { id: result.id, sequence: result.sequence };
@@ -244,6 +245,7 @@ export function Game() {
             if (user) { setMessage("Continue your Cloud hunt and choose Abandon run from its pause menu."); return; }
             localStorage.removeItem(checkpointKey);
             setRecover(false);
+            setMessage("");
           }}
         />
       ) : (
