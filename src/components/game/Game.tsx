@@ -21,6 +21,7 @@ import { loadPlayer, playerAction, beginRun, syncRun } from "@/game/game.functio
 import { Hub } from "./Hub";
 import { Run } from "./Run";
 import { settleRun } from "@/game/settlement";
+import { readSnapshot } from "@/game/recovery";
 const checkpointKey = "hollowfall-guest-run-v2";
 export function Game() {
   const [save, setSave] = useState<Save>(freshSave),
@@ -141,7 +142,7 @@ export function Game() {
       } else {
         const stored = localStorage.getItem(checkpointKey);
         const initial = stored
-          ? (JSON.parse(stored) as GameState)
+          ? readSnapshot(stored)
           : createGame(saveRef.current, Math.floor(Math.random() * 4294967296));
         runMeta.current = null;
         localStorage.setItem(checkpointKey, JSON.stringify(initial));
@@ -239,6 +240,11 @@ export function Game() {
           account={user?.name ?? "Guest"}
           busy={busy}
           recover={recover}
+          onDiscard={() => {
+            if (user) { setMessage("Continue your Cloud hunt and choose Abandon run from its pause menu."); return; }
+            localStorage.removeItem(checkpointKey);
+            setRecover(false);
+          }}
         />
       ) : (
         <div className="welcome">

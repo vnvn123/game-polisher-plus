@@ -4,8 +4,15 @@ import { CHESTS, WORLDS } from "@/game/content";
 import { createGame, step, choose } from "@/game/simulation";
 import { settleRun } from "@/game/settlement";
 import { attractionStep, overlapsArc, segmentHit } from "@/game/geometry";
+import { readSnapshot } from "@/game/recovery";
 
 describe("Preserved Hollowfall gameplay", () => {
+  it("restores valid run state and rejects corrupt snapshots before play", () => {
+    const game = createGame(freshSave(), 42);
+    expect(readSnapshot(JSON.stringify(game))).toEqual(game);
+    expect(() => readSnapshot('{"time":12}')).toThrow();
+    expect(() => readSnapshot(JSON.stringify({ ...game, player: null }))).toThrow();
+  });
   it("keeps all three worlds and their twelve enemies and seven bosses", () => {
     expect(WORLDS).toHaveLength(3);
     for (const world of WORLDS) {

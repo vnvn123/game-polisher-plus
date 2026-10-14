@@ -14,3 +14,4 @@
 - Keep cloud rewards server-replayed and committed through service-only optimistic-concurrency database functions; clients have owner-scoped read access only.
 - Rehost uploaded artwork through project asset pointers; keep generated supplementary artwork as bundled imports so originals remain unchanged.
 - Apply run rewards through one shared pure settlement helper so guest and cloud progression cannot diverge.
+- Validate local run snapshots before mounting combat; preserve invalid bytes until an explicit discard so recovery failures cannot silently overwrite progress.

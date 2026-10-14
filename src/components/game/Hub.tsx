@@ -77,6 +77,7 @@ export function Hub({
   account,
   busy,
   recover,
+  onDiscard,
 }: {
   save: Save;
   act: (a: Action) => Promise<void>;
@@ -85,6 +86,7 @@ export function Hub({
   account: string;
   busy: boolean;
   recover: boolean;
+  onDiscard: () => void;
 }) {
   const [tab, setTab] = useState("hunt"),
     [selectedHero, setSelectedHero] = useState(save.hero),
@@ -93,7 +95,8 @@ export function Hub({
     [codex, setCodex] = useState("bestiary"),
     [item, setItem] = useState<Item | null>(null),
     [slot, setSlot] = useState<Slot | null>(null),
-    [odds, setOdds] = useState<string | null>(null);
+    [odds, setOdds] = useState<string | null>(null),
+    [discard, setDiscard] = useState(false);
   const hero = HEROES.find((h) => h.id === selectedHero) ?? HEROES[0];
   const active = HEROES.find((h) => h.id === save.hero) ?? HEROES[0];
   const world = WORLDS[save.world] ?? WORLDS[0];
@@ -132,6 +135,10 @@ export function Hub({
   };
   return (
     <div className="shell">
+      {discard && <div className="modal-backdrop"><div className="modal" role="dialog" aria-modal="true" aria-label="Discard saved hunt">
+        <h2>Leave this hunt behind?</h2><p>Unsaved rewards and all progress in this unfinished hunt will be lost. Permanent progression is kept.</p>
+        <div className="modal-actions"><Button variant="outline" onClick={() => setDiscard(false)}>Keep hunt</Button><Button variant="game" onClick={() => { onDiscard(); setDiscard(false); }}>Discard hunt</Button></div>
+      </div></div>}
       <header className="hub-header">
         <div className="small-brand">
           <Castle />
@@ -244,6 +251,7 @@ export function Hub({
                   <Play size={17} />
                   {recover ? "Continue Hunt" : "Begin Hunt"}
                 </Button>
+                {recover && <Button variant="ghost" disabled={busy} onClick={() => setDiscard(true)}>Discard saved hunt</Button>}
                 <p className="record-note">
                   Level {save.heroLevels[active.id] ?? 1} · {save.endless ? "Endless" : "Survival"}
                 </p>
