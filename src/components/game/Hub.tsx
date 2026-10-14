@@ -96,12 +96,14 @@ export function Hub({
     [item, setItem] = useState<Item | null>(null),
     [slot, setSlot] = useState<Slot | null>(null),
     [odds, setOdds] = useState<string | null>(null),
-    [discard, setDiscard] = useState(false);
+    [discard, setDiscard] = useState(false),
+    [candidate, setCandidate] = useState<Item | null>(null);
   const hero = HEROES.find((h) => h.id === selectedHero) ?? HEROES[0];
   const active = HEROES.find((h) => h.id === save.hero) ?? HEROES[0];
   const world = WORLDS[save.world] ?? WORLDS[0];
   if (!hero || !active || !world) return null;
   const stats = combatStats(save);
+  const preview = candidate && slot ? combatStats({ ...save, equipped: { ...save.equipped, [slot]: candidate.id } }) : null;
   const heading = navigation.find((n) => n.id === tab)?.name ?? "Hunt";
   const objective = (o: Objective, kind: string) => {
     const period = kind === "daily" || kind === "weekly" ? questKey(kind, Date.now()) : undefined;
@@ -134,7 +136,7 @@ export function Hub({
     );
   };
   return (
-    <div className="shell">
+    <div className="shell" data-ui-scale={save.settings.scale}>
       {discard && <div className="modal-backdrop"><div className="modal" role="dialog" aria-modal="true" aria-label="Discard saved hunt">
         <h2>Leave this hunt behind?</h2><p>Unsaved rewards and all progress in this unfinished hunt will be lost. Permanent progression is kept.</p>
         <div className="modal-actions"><Button variant="outline" onClick={() => setDiscard(false)}>Keep hunt</Button><Button variant="game" onClick={() => { onDiscard(); setDiscard(false); }}>Discard hunt</Button></div>
@@ -840,6 +842,7 @@ export function Hub({
                 setItem(null);
                 setSlot(null);
                 setOdds(null);
+                setCandidate(null);
               }}
             >
               <X />
@@ -877,10 +880,9 @@ export function Hub({
                         variant="ghost"
                         className={`item-card rarity-${i.rarity} rarity-frame`}
                         key={i.id}
-                        onClick={async () => {
-                          await act({ type: "equip", id: i.id, slot });
-                          setSlot(null);
-                        }}
+                        disabled={busy}
+                        aria-pressed={candidate?.id === i.id}
+                        onClick={() => setCandidate(i)}
                       >
                         <ItemArt item={i} />
                         <h3>{i.name}</h3>
@@ -888,6 +890,19 @@ export function Hub({
                       </Button>
                     ))}
                 </div>
+                {candidate && preview && <>
+                  <h3>{candidate.name}</h3>
+                  {(["hp", "damage", "defense", "speed", "xp"] as const).map((key) => <div className="detail-row" key={key}>
+                    <span>{({ hp: "Health", damage: "Damage multiplier", defense: "Damage reduction", speed: "Movement speed", xp: "XP multiplier" })[key]}</span>
+                    <strong>{stats[key].toFixed(2)} → {preview[key].toFixed(2)}</strong>
+                  </div>)}
+                  {candidate.category === "ring" && <p>{RINGS[candidate.set]?.[2]}</p>}
+                  {candidate.category === "pet" && <p>{PETS[candidate.set]?.[4]}</p>}
+                  <Button variant="game" disabled={busy} onClick={async () => {
+                    await act({ type: "equip", id: candidate.id, slot });
+                    setCandidate(null); setSlot(null);
+                  }}>Confirm equipment</Button>
+                </>}
                 {!save.inventory.some(
                   (i) =>
                     i.count > 0 &&
@@ -896,9 +911,11 @@ export function Hub({
                 <div className="modal-actions">
                   <Button
                     variant="outline"
+                    disabled={busy}
                     onClick={async () => {
                       await act({ type: "unequip", slot });
                       setSlot(null);
+                      setCandidate(null);
                     }}
                   >
                     Unequip

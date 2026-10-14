@@ -182,7 +182,7 @@ export function Run({
     setInspected(id);
   };
   return (
-    <div className="run-screen">
+    <div className="run-screen" data-ui-scale={save.settings.scale}>
       <canvas
         ref={canvas}
         aria-label="Hollowfall survival battlefield"

@@ -1258,6 +1258,11 @@ select:focus-visible {
   background: var(--overlay);
   position: relative;
 }
+.shell[data-ui-scale="0.8"] .hub-content,
+.shell[data-ui-scale="0.9"] .hub-content { zoom: 0.9; }
+.shell[data-ui-scale="1.1"] .hub-content,
+.shell[data-ui-scale="1.2"] .hub-content { zoom: 1.1; }
+.item-card[aria-pressed="true"] { outline: 2px solid var(--primary); outline-offset: 2px; }
 .run-skill.passive {
   border-color: var(--spectral);
 }
